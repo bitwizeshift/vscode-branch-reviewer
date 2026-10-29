@@ -3,19 +3,183 @@
   "displayName": "Branch Reviewer",
   "description": "Review local branch history one commit at a time",
   "version": "0.0.1",
+  "publisher": "bitwizeshift",
   "engines": {
     "vscode": "^1.139.0"
   },
   "categories": [
-    "Other"
+    "SCM Providers"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "workspaceContains:.git"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "branch-reviewer.helloWorld",
-        "title": "Hello World"
+        "command": "branchReviewer.refresh",
+        "title": "Refresh",
+        "category": "Branch Reviewer",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "branchReviewer.abort",
+        "title": "Abort Review",
+        "category": "Branch Reviewer",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "branchReviewer.showLog",
+        "title": "Show Log",
+        "category": "Branch Reviewer"
+      },
+      {
+        "command": "branchReviewer.files.showChangedOnly",
+        "title": "Show Only Changed Files",
+        "category": "Branch Reviewer",
+        "icon": "$(filter)"
+      },
+      {
+        "command": "branchReviewer.files.showAll",
+        "title": "Show All Files",
+        "category": "Branch Reviewer",
+        "icon": "$(filter-filled)"
+      },
+      {
+        "command": "branchReviewer.openChanges",
+        "title": "Open Changes",
+        "category": "Branch Reviewer",
+        "icon": "$(git-compare)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "branchReviewer",
+          "title": "Branch Reviewer",
+          "icon": "media/branch-reviewer.svg"
+        }
+      ]
+    },
+    "views": {
+      "branchReviewer": [
+        {
+          "id": "branchReviewer.review",
+          "name": "Review",
+          "type": "webview"
+        },
+        {
+          "id": "branchReviewer.files",
+          "name": "Files Changed"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "branchReviewer.files",
+        "contents": "Start a review to browse the files changed by each commit.",
+        "when": "!branchReviewer.reviewing && !branchReviewer.noRepository"
+      },
+      {
+        "view": "branchReviewer.files",
+        "contents": "Open a folder that contains a git repository to review its branches.",
+        "when": "branchReviewer.noRepository"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "branchReviewer.refresh",
+          "when": "view == branchReviewer.review",
+          "group": "navigation@1"
+        },
+        {
+          "command": "branchReviewer.abort",
+          "when": "view == branchReviewer.review && branchReviewer.reviewing",
+          "group": "navigation@2"
+        },
+        {
+          "command": "branchReviewer.files.showChangedOnly",
+          "when": "view == branchReviewer.files && branchReviewer.reviewing && !branchReviewer.changedOnly",
+          "group": "navigation"
+        },
+        {
+          "command": "branchReviewer.files.showAll",
+          "when": "view == branchReviewer.files && branchReviewer.reviewing && branchReviewer.changedOnly",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "branchReviewer.openChanges",
+          "when": "view == branchReviewer.files && viewItem == changedFile",
+          "group": "inline"
+        },
+        {
+          "command": "branchReviewer.openChanges",
+          "when": "view == branchReviewer.files && viewItem == changedFile",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "branchReviewer.abort",
+          "when": "branchReviewer.reviewing"
+        },
+        {
+          "command": "branchReviewer.openChanges",
+          "when": "false"
+        },
+        {
+          "command": "branchReviewer.files.showChangedOnly",
+          "when": "branchReviewer.reviewing && !branchReviewer.changedOnly"
+        },
+        {
+          "command": "branchReviewer.files.showAll",
+          "when": "branchReviewer.reviewing && branchReviewer.changedOnly"
+        }
+      ]
+    },
+    "colors": [
+      {
+        "id": "branchReviewer.addedForeground",
+        "description": "Color of files and lines added by the commit under review.",
+        "defaults": {
+          "dark": "#73C991",
+          "light": "#587C0C",
+          "highContrast": "#A1E3AD",
+          "highContrastLight": "#374E06"
+        }
+      },
+      {
+        "id": "branchReviewer.modifiedForeground",
+        "description": "Color of files and lines modified by the commit under review.",
+        "defaults": {
+          "dark": "#E2C08D",
+          "light": "#895503",
+          "highContrast": "#E2C08D",
+          "highContrastLight": "#895503"
+        }
+      },
+      {
+        "id": "branchReviewer.deletedForeground",
+        "description": "Color of files and lines deleted by the commit under review.",
+        "defaults": {
+          "dark": "#C74E39",
+          "light": "#AD0707",
+          "highContrast": "#C74E39",
+          "highContrastLight": "#AD0707"
+        }
+      },
+      {
+        "id": "branchReviewer.renamedForeground",
+        "description": "Color of files renamed by the commit under review.",
+        "defaults": {
+          "dark": "#73C991",
+          "light": "#007100",
+          "highContrast": "#73C991",
+          "highContrastLight": "#007100"
+        }
       }
     ]
   },
