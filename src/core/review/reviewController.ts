@@ -205,7 +205,6 @@ export class ReviewController {
 		const op = this.begin('Aborting review');
 		const { git, message, logger, prompt } = this.deps;
 		const review = this.current;
-		logger.info('Aborting review.');
 		try {
 			if (review && await this.ownsRebase(review)) {
 				await git.abortRebase();
