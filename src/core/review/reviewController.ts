@@ -125,13 +125,22 @@ export class ReviewController {
 			const review = this.require('active');
 			const commit = review.pending[0];
 			const edited = await message.read();
-			const [draft, original] = await Promise.all([git.normalizeMessage(edited), git.message('HEAD').then(text => git.normalizeMessage(text))]);
+			const [draft, original, signed] = await Promise.all([
+				git.normalizeMessage(edited),
+				git.message('HEAD').then(text => git.normalizeMessage(text)),
+				git.isSigned('HEAD'),
+			]);
 			const stashes = await this.ensureClean('approve the commit', review.stashes);
 			const prepared = { ...review, stashes };
-			if (draft !== original) {
-				progress.busy('Amending commit message');
+			const reworded = draft !== original;
+			if (reworded || !signed) {
+				// Only signed commits reach the base. Re-creating the commit gives it
+				// a new id, so the rest of the branch is replayed onto it, as a
+				// forced rebase of that commit would, before the base moves.
+				progress.busy(reworded ? 'Amending commit message' : 'Signing commit');
 				const sha = await git.amend(edited);
-				logger.info(`Reworded ${short(commit.sha)} as ${short(sha)}; replaying the rest of '${review.head}'.`);
+				const change = reworded ? 'Reworded' : 'Signed';
+				logger.info(`${change} ${short(commit.sha)} as ${short(sha)}; replaying the rest of '${review.head}'.`);
 				await this.replay(op, prepared, { kind: 'approve', sha, subject: firstLine(draft) });
 				return;
 			}

@@ -144,6 +144,26 @@ describe('ReviewController.approve', () => {
 		assert.equal(controller.review?.baseSha, 'a1');
 	});
 
+	test('signs an unsigned commit before replaying the branch and fast-forwarding', async () => {
+		const { git, controller, logger } = await reviewing();
+		git.unsigned.add('HEAD');
+		git.continueQueue = ['finished'];
+		git.commitQueue = [[two]];
+		await controller.approve();
+		assert.deepEqual(git.calls, ['amend One', 'continue', 'ff main b0->a1', 'commits main..topic', 'start main topic edit c2 Two']);
+		assert.deepEqual(controller.review?.approved, [{ sha: 'a1', subject: 'One' }]);
+		assert.ok(logger.lines.some(line => line.startsWith('info Signed c1 as a1')));
+	});
+
+	test('signs the last commit before ending the review', async () => {
+		const { git, controller } = await reviewing(review({ pending: [one] }));
+		git.unsigned.add('HEAD');
+		git.continueQueue = ['finished'];
+		await controller.approve();
+		assert.deepEqual(git.calls, ['amend One', 'continue', 'ff main b0->a1', 'commits main..topic']);
+		assert.equal(controller.review, undefined);
+	});
+
 	test('defers the fast-forward of a reworded commit until a conflict is resolved', async () => {
 		const { git, message, controller } = await reviewing();
 		message.text = 'Reworded\n';

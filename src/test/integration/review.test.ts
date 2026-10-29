@@ -70,6 +70,20 @@ suite('Branch review', () => {
 		assert.equal(review()?.pending.length, 2);
 	});
 
+	test('approving an unsigned commit signs it before fast-forwarding', async () => {
+		git('reset', '--quiet', '--hard', 'main');
+		git('-c', 'commit.gpgsign=false', 'commit', '--quiet', '--allow-empty', '--message', 'Unsigned');
+		const unsigned = git('rev-parse', 'HEAD');
+		commit('After', { 'after.txt': 'after\n' });
+		await reviewer.controller.start('main', 'topic');
+		await reviewer.controller.approve();
+		const tip = git('rev-parse', 'main');
+		assert.notEqual(tip, unsigned);
+		assert.match(git('cat-file', 'commit', tip), /^gpgsig /m);
+		assert.equal(git('log', '-1', '--format=%s', tip), 'Unsigned');
+		assert.equal(git('rev-parse', 'HEAD^'), tip);
+	});
+
 	test('approving every commit ends the review on the head branch', async () => {
 		await reviewer.controller.start('main', 'topic');
 		await reviewer.controller.approve();
