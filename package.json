@@ -145,40 +145,40 @@
         "id": "branchReviewer.addedForeground",
         "description": "Color of files and lines added by the commit under review.",
         "defaults": {
-          "dark": "#73C991",
-          "light": "#587C0C",
-          "highContrast": "#A1E3AD",
-          "highContrastLight": "#374E06"
+          "dark": "#3FB950",
+          "light": "#1A7F37",
+          "highContrast": "#56D364",
+          "highContrastLight": "#1A7F37"
         }
       },
       {
         "id": "branchReviewer.modifiedForeground",
         "description": "Color of files and lines modified by the commit under review.",
         "defaults": {
-          "dark": "#E2C08D",
-          "light": "#895503",
-          "highContrast": "#E2C08D",
-          "highContrastLight": "#895503"
+          "dark": "#E3B341",
+          "light": "#B08800",
+          "highContrast": "#F2CC60",
+          "highContrastLight": "#9A6700"
         }
       },
       {
         "id": "branchReviewer.deletedForeground",
         "description": "Color of files and lines deleted by the commit under review.",
         "defaults": {
-          "dark": "#C74E39",
-          "light": "#AD0707",
-          "highContrast": "#C74E39",
-          "highContrastLight": "#AD0707"
+          "dark": "#F85149",
+          "light": "#CF222E",
+          "highContrast": "#FF7B72",
+          "highContrastLight": "#CF222E"
         }
       },
       {
         "id": "branchReviewer.renamedForeground",
         "description": "Color of files renamed by the commit under review.",
         "defaults": {
-          "dark": "#73C991",
-          "light": "#007100",
-          "highContrast": "#73C991",
-          "highContrastLight": "#007100"
+          "dark": "#3FB950",
+          "light": "#1A7F37",
+          "highContrast": "#56D364",
+          "highContrastLight": "#1A7F37"
         }
       }
     ]
