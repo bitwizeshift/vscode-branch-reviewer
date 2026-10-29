@@ -2,7 +2,7 @@
   "name": "branch-reviewer",
   "displayName": "Branch Reviewer",
   "description": "Review local branch history one commit at a time",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "bitwizeshift",
   "engines": {
     "vscode": "^1.139.0"

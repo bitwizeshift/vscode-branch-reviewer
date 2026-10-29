@@ -27,7 +27,7 @@ under review. That commit's message opens in an editor as
 
 | Button | Effect |
 | --- | --- |
-| **Approve** | Fast-forwards the base branch onto the commit and moves on to the next one. If you edited the message, the commit is amended first, and the rest of the branch is replayed to check for conflicts before the base moves. Approved commits are grayed out with a ✓. |
+| **Approve** | Fast-forwards the base branch onto the commit and moves on to the next one. If you edited the message, or the commit isn't signed, the commit is first re-created with a signature (using your configured signing key), and the rest of the branch is replayed to check for conflicts before the base moves. Approved commits are grayed out with a ✓. |
 | **Reject** | Shows **Cancel** (go back), **Edit** (pause the rebase), and **Abandon** (`git rebase --abort`). |
 | **Quit** | Replays the remaining commits unchanged and ends the review. Commits approved so far stay on the base branch. |
 
@@ -65,8 +65,10 @@ moves, the panel darkens and explains why the review was stopped.
 This view shows the working tree at the commit under review, laid out
 like the Explorer. The first entry opens the commit message.
 
-- Files and folders the commit changed are colored: green for added,
-  yellow for modified, red for deleted.
+- The names of files and folders the commit changed are colored: green
+  for added, yellow for modified, red for deleted. The colors can be
+  overridden through `workbench.colorCustomizations` using the
+  `branchReviewer.*Foreground` color IDs.
 - The filter button in the title bar switches between showing every
   file and showing only the changed ones.
 - The inline action on a changed file opens its diff against the
