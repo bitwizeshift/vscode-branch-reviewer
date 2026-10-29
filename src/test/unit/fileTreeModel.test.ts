@@ -16,6 +16,11 @@ describe('ChangeIndex', () => {
 		assert.equal(index.kindOf('README.md'), undefined);
 	});
 
+	test('tells changed files apart from folders', () => {
+		assert.equal(index.isChangedFile('src/new.ts'), true);
+		assert.equal(index.isChangedFile('src'), false);
+	});
+
 	test('summarises folders from everything beneath them', () => {
 		assert.equal(index.kindOf('assets'), 'added');
 		assert.equal(index.kindOf('docs'), 'deleted');

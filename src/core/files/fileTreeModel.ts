@@ -41,6 +41,10 @@ export class ChangeIndex {
 		return this.files.size;
 	}
 
+	isChangedFile(path: string): boolean {
+		return this.files.has(path);
+	}
+
 	/** Kind of a file, or of a folder summarised from everything beneath it. */
 	kindOf(path: string): ChangeKind | undefined {
 		const file = this.files.get(path);
