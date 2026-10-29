@@ -171,8 +171,17 @@ export class GitRepository extends GitCommands implements ReviewGit {
 		}
 	}
 
+	async isSigned(rev: string): Promise<boolean> {
+		const object = await this.text(['cat-file', 'commit', rev]);
+		const end = object.indexOf('\n\n');
+		const headers = end < 0 ? object : object.slice(0, end);
+		return /^gpgsig(-sha256)? /m.test(headers);
+	}
+
 	async amend(message: string): Promise<string> {
-		await this.text(['commit', '--amend', '--allow-empty', '--cleanup=strip', '--file=-'], { env: NO_EDITOR, input: message });
+		// Signing is explicit so that an approved commit is signed even when
+		// commit.gpgsign is off.
+		await this.text(['commit', '--amend', '--allow-empty', '--gpg-sign', '--cleanup=strip', '--file=-'], { env: NO_EDITOR, input: message });
 		return (await this.text(['rev-parse', 'HEAD'])).trim();
 	}
 

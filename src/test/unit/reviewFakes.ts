@@ -24,6 +24,8 @@ export class MockGit implements ReviewGit {
 	startOutcome: RebaseOutcome = 'stopped';
 	continueQueue: RebaseOutcome[] = [];
 	amendedSha = 'a1';
+	/** Commits without a signature; every other commit counts as signed. */
+	unsigned = new Set<string>();
 	treeQueue: WorkingTreeStatus[] = [];
 	stashSha = 's1';
 	stashRestores = true;
@@ -78,6 +80,8 @@ export class MockGit implements ReviewGit {
 			throw this.abortError;
 		}
 	}
+
+	async isSigned(rev: string) { return !this.unsigned.has(rev); }
 
 	async amend(message: string) {
 		this.calls.push(`amend ${message.trim()}`);

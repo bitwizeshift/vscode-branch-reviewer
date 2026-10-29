@@ -29,7 +29,9 @@ export interface ReviewGit {
 	rewriteTodo(todo: string): Promise<void>;
 	continueRebase(onProgress: ProgressListener): Promise<RebaseOutcome>;
 	abortRebase(): Promise<void>;
-	/** Rewords HEAD and returns the new commit id. */
+	/** True when the commit object carries a signature, valid or not. */
+	isSigned(rev: string): Promise<boolean>;
+	/** Re-creates HEAD as a signed commit with `message` and returns its id. */
 	amend(message: string): Promise<string>;
 	/** Moves `branch` from `from` to `to`, failing if it no longer points at `from`. */
 	fastForward(branch: string, to: string, from: string): Promise<void>;

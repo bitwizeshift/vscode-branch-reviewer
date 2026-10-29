@@ -124,13 +124,28 @@ describe('GitRepository', () => {
 		await assert.rejects(git.abortRebase(), /index\.lock/);
 	});
 
-	test('amends from stdin and returns the new HEAD', async () => {
+	test('amends from stdin, signing explicitly, and returns the new HEAD', async () => {
 		const { runner, git } = fixture();
 		runner.on('rev-parse HEAD', { stdout: 'n3w\n' });
 		assert.equal(await git.amend('Reworded\n'), 'n3w');
 		const amend = runner.calls.find(call => call.args[0] === 'commit');
 		assert.equal(amend?.input, 'Reworded\n');
+		assert.ok(amend?.args.includes('--gpg-sign'));
 	});
+
+	const objects: { name: string; object: string; signed: boolean }[] = [
+		{ name: 'a GPG signature', object: 'tree t\nauthor a\ngpgsig -----BEGIN PGP SIGNATURE-----\n -----END PGP SIGNATURE-----\n\nSubject\n', signed: true },
+		{ name: 'a SHA-256 signature', object: 'tree t\ngpgsig-sha256 sig\n\nSubject\n', signed: true },
+		{ name: 'no signature', object: 'tree t\nauthor a\n\nSubject\n', signed: false },
+		{ name: 'gpgsig only in the message', object: 'tree t\n\ngpgsig in the body\n', signed: false },
+	];
+	for (const { name, object, signed } of objects) {
+		test(`detects ${name}`, async () => {
+			const { runner, git } = fixture();
+			runner.on('cat-file commit c1', { stdout: object });
+			assert.equal(await git.isSigned('c1'), signed);
+		});
+	}
 
 	test('fast-forwards with the expected old value', async () => {
 		const { runner, git } = fixture();
