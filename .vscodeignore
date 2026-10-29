@@ -9,3 +9,8 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 **/.vscode-test.*
+out/test/**
+dist/**
+scripts/**
+AGENTS.md
+.claude/**
