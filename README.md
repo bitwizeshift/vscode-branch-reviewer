@@ -1,71 +1,100 @@
-# branch-reviewer README
+# Branch Reviewer
 
-This is the README for your extension "branch-reviewer". After writing up a brief description, we recommend including the following sections.
+Review a local branch one commit at a time, reword commit messages as you
+go, and fast-forward each approved commit onto the base branch.
 
-## Features
+A review is an interactive rebase that stops on every commit in turn.
+While a commit is stopped you can read its message, browse the files it
+changed, and see its changed lines in the editor gutter.
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+## Starting a review
 
-For example if there is an image subfolder under your extension project workspace:
+Open the **Branch Reviewer** icon in the activity bar.
 
-\!\[feature X\]\(images/feature-x.png\)
+1. In **Review**, choose a **base** branch (by default the repository's
+   default branch) and a **head** branch (by default the branch that is
+   checked out).
+2. Press **Review**.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+The head branch must already be rebased onto the base, and it must not
+contain merge commits. Otherwise the review is refused with an error.
 
-## Requirements
+## Reviewing a commit
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+The panel lists the commits from oldest to newest and highlights the one
+under review. That commit's message opens in an editor as
+`COMMIT_EDITMSG`, so it gets the usual git commit message support.
 
-## Extension Settings
+| Button | Effect |
+| --- | --- |
+| **Approve** | Fast-forwards the base branch onto the commit and moves on to the next one. If you edited the message, the commit is amended first, and the rest of the branch is replayed to check for conflicts before the base moves. Approved commits are grayed out with a ✓. |
+| **Reject** | Shows **Cancel** (go back), **Edit** (pause the rebase), and **Abandon** (`git rebase --abort`). |
+| **Quit** | Replays the remaining commits unchanged and ends the review. Commits approved so far stay on the base branch. |
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+Use **Refresh** and **Abort** in the panel title bar. Abort is the same
+as `git rebase --abort`, and it always resets the review, even if git
+reports an error.
 
-For example:
+### Editing history
 
-This extension contributes the following settings:
+**Reject → Edit** pauses the rebase on the current commit. You can amend
+it or add new commits with any git tool. **Resume** replays the rest of
+the branch, reloads the commit list, and continues with the first
+commit that hasn't been reviewed.
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+### Conflicts
 
-## Known Issues
+If replaying the branch hits a conflict, the panel darkens. Resolve the
+conflict, stage the result, and press **Continue**. The action that was
+interrupted (an approval, a resume, or a quit) then finishes.
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+### Uncommitted changes
 
-## Release Notes
+Before any step that continues the rebase, a warning offers **Autostash**
+or **Cancel** if there are uncommitted changes. Autostashed changes are
+restored when the review ends.
 
-Users appreciate release notes as you update your extension.
+### Changes made elsewhere
 
-### 1.0.0
+The extension watches the git directory (it never polls). If the rebase
+is aborted from elsewhere, a branch is checked out, or the base branch
+moves, the panel darkens and explains why the review was stopped.
 
-Initial release of ...
+## Files Changed
 
-### 1.0.1
+This view shows the working tree at the commit under review, laid out
+like the Explorer. The first entry opens the commit message.
 
-Fixed issue #.
+- Files and folders the commit changed are colored: green for added,
+  yellow for modified, red for deleted.
+- The filter button in the title bar switches between showing every
+  file and showing only the changed ones.
+- The inline action on a changed file opens its diff against the
+  parent commit.
 
-### 1.1.0
+Open editors also mark the lines the commit changed in the gutter.
 
-Added features X, Y, and Z.
+## Status and logs
 
----
+The status bar shows the stage of each running operation, such as
+`Rebasing 4/10`. Click it to open the **Branch Reviewer** log.
 
-## Following extension guidelines
+## Limitations
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+- Only the first workspace folder's repository is reviewed.
+- The Files Changed view doesn't apply `files.exclude`.
+- In a linked worktree, moves of the base branch are noticed only on
+  the next repository event.
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+## Development
 
-## Working with Markdown
+```sh
+npm install
+npm run compile
+npm run test:unit         # node:test, all git and editor access mocked
+npm run test:integration  # VS Code host against a temporary repository
+```
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+`test:integration` downloads VS Code. Alternatively, set
+`VSCODE_EXECUTABLE_PATH` to a local installation that isn't currently
+running.
