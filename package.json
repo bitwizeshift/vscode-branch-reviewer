@@ -25,7 +25,9 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "node --test \"out/test/unit/**/*.test.js\"",
+    "test:integration": "vscode-test"
   },
   "devDependencies": {
     "@types/vscode": "^1.139.0",
