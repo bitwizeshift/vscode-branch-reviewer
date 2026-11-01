@@ -1,13 +1,45 @@
 # Branch Reviewer
 
-Review a local branch one commit at a time, reword commit messages as you
-go, and fast-forward each approved commit onto the base branch.
+A simple extension to enable reviewing a local branch, one commit at a time,
+and promote commits back to your base branch.
 
-A review is an interactive rebase that stops on every commit in turn.
-While a commit is stopped you can read its message, browse the files it
-changed, and see its changed lines in the editor gutter.
+![extension](./screenshot.png)
+
+> [!NOTE]
+>
+> This tool was authored by a different tool that goes by the name of Claude.
+> I have not vetted the quality or accuracy of the code; I use this tool so that
+> I can vet the quality and accuracy of other code that I do care about. It
+> works as the tool I need it to be, and I'm sharing this in case anyone else
+> can benefit from it.
+
+## Features
+
+* **Review and approve by commits** \
+  Every commit gets reviewed independently and is approved independently.
+  When a commit is approved, it gets fast-forwarded back onto the base branch.
+
+* **Filter changed files** \
+  During a review, the files that have been modified -- and how they are
+  modified -- are all displayed in its own handy 'files changed' panel.
+
+* **Reword commits** \
+  Did Claude/Codex/Deepseek write some heavy slop-filled message that you can't
+  stand to read? You can edit the `COMMIT_MESSAGE` before promoting commits to
+  avoid a hefty serving of word-salad.
+
+* **Edit changes** \
+  Did your slop-as-a-service tool write bad code that you want fixed before it
+  is immortalized in your history? Now is the time to shout at it. You can
+  reject a commit and edit it locally, which just brings up the standard
+  `git rebase` in edit mode so that it can be fixed.
 
 ## Starting a review
+
+> [!WARNING]
+>
+> Everything below this line is written by Claude. It's correct, but it's also
+> a heaping serving of slop. Be warned.
 
 Open the **Branch Reviewer** icon in the activity bar.
 
